@@ -253,6 +253,13 @@ $.widget("ui.sortable", $.ui.mouse, {
 		//Prepare scrolling
 		if(this.scrollParent[0] !== document && this.scrollParent[0].tagName !== "HTML") {
 			this.overflowOffset = this.scrollParent.offset();
+			var self = this;
+            setTimeout(function(){
+                self.SCROLLWIDTH = self.scrollParent[0].scrollWidth;
+                self.SCROLLHEIGHT = self.scrollParent[0].scrollHeight;
+                self.OFFSETWIDTH = self.scrollParent[0].offsetWidth;
+                self.OFFSETHEIGHT = self.scrollParent[0].offsetHeight;
+            }, 0)
 		}
 
 		//Call callbacks
@@ -305,8 +312,11 @@ $.widget("ui.sortable", $.ui.mouse, {
 		if(this.options.scroll) {
 			if(this.scrollParent[0] !== document && this.scrollParent[0].tagName !== "HTML") {
 
+				hasXSpace = this.scrollParent[0].scrollLeft < this.SCROLLWIDTH - this.OFFSETWIDTH
+                hasYSpace = this.scrollParent[0].scrollTop < this.SCROLLHEIGHT - this.OFFSETHEIGHT
+
 				if(!this.options.disableScrollY){
-					if((this.overflowOffset.top + this.scrollParent[0].offsetHeight) - event.pageY < o.scrollSensitivity) {
+					if((this.overflowOffset.top + this.scrollParent[0].offsetHeight) - event.pageY < o.scrollSensitivity && hasYSpace) {
 						this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop + o.scrollSpeed;
 					} else if(event.pageY - this.overflowOffset.top < o.scrollSensitivity) {
 						this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop - o.scrollSpeed;
@@ -315,7 +325,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 				
 
 				if(!this.options.disableScrollX){
-					if((this.overflowOffset.left + this.scrollParent[0].offsetWidth) - event.pageX < o.scrollSensitivity) {
+					if((this.overflowOffset.left + this.scrollParent[0].offsetWidth) - event.pageX < o.scrollSensitivity && hasXSpace) {
 						this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft + o.scrollSpeed;
 					} else if(event.pageX - this.overflowOffset.left < o.scrollSensitivity) {
 						this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft - o.scrollSpeed;
